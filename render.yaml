@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: imdb-sentiment-api
+    env: python
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 run_app:app
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.0
