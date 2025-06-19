@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Review Sentiment Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-section label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .review-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .review-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .examples-section {
+            margin-bottom: 30px;
+        }
+
+        .examples-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-btn {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            display: none;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result.positive {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .result.negative {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+
+        .sentiment-label {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .confidence {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .model-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .model-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .error {
+            background: #ff4757;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .example-buttons {
+                flex-direction: column;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Movie Review Sentiment Analyzer</h1>
+            <p>Powered by Machine Learning • Analyze movie review sentiment in real-time</p>
+        </div>
+
+        <div class="main-content">
+            <div class="error" id="error"></div>
+
+            <div class="input-section">
+                <label for="reviewText">Enter a movie review to analyze:</label>
+                <textarea 
+                    id="reviewText" 
+                    class="review-input" 
+                    placeholder="Type or paste a movie review here... For example: 'This movie was absolutely fantastic! The acting was superb and the plot kept me engaged throughout.'"
+                ></textarea>
+            </div>
+
+            <div class="examples-section">
+                <div class="examples-title">Or try these examples:</div>
+                <div class="example-buttons">
+                    <button class="example-btn" onclick="loadExample('positive1')">Positive Review</button>
+                    <button class="example-btn" onclick="loadExample('negative1')">Negative Review</button>
+                    <button class="example-btn" onclick="loadExample('mixed')">Mixed Review</button>
+                    <button class="example-btn" onclick="loadExample('positive2')">Enthusiastic Review</button>
+                    <button class="example-btn" onclick="loadExample('negative2')">Critical Review</button>
+                </div>
+            </div>
+
+            <button class="analyze-btn" onclick="analyzeReview()" id="analyzeBtn">
+                Analyze Sentiment
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing sentiment...</p>
+            </div>
+
+            <div class="result" id="result">
+                <div class="sentiment-label" id="sentimentLabel"></div>
+                <div class="confidence" id="confidenceText"></div>
+            </div>
+
+            <div class="model-info">
+                <h3>Model Performance</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Model Type</div>
+                        <div class="info-value">Logistic Regression</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Test Accuracy</div>
+                        <div class="info-value">89.36%</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Training Data</div>
+                        <div class="info-value">50k IMDB Reviews</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Features</div>
+                        <div class="info-value">TF-IDF Vectors</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const examples = {
+            positive1: "This movie was absolutely fantastic! The cinematography was breathtaking, the acting was superb, and the storyline kept me engaged from start to finish. Definitely one of the best films I've seen this year.",
+            negative1: "What a complete waste of time. The plot was confusing, the dialogue was terrible, and the acting felt forced throughout. I couldn't wait for it to end. Definitely not worth watching.",
+            mixed: "The movie had some good moments, especially the special effects and soundtrack. However, the pacing was slow and some plot points didn't make much sense. It's okay but nothing extraordinary.",
+            positive2: "AMAZING! This film exceeded all my expectations. Brilliant performances, stunning visuals, and an emotionally powerful story. I was laughing, crying, and on the edge of my seat. Pure cinematic gold!",
+            negative2: "Disappointing and poorly executed. The director clearly didn't understand the source material. Weak character development, predictable plot, and amateur-level dialogue. Save your money and skip this one."
+        };
+
+        function loadExample(type) {
+            document.getElementById('reviewText').value = examples[type];
+        }
+
+        async function analyzeReview() {
+            const reviewText = document.getElementById('reviewText').value.trim();
+            
+            if (!reviewText) {
+                showError('Please enter a review to analyze.');
+                return;
+            }
+
+            // Show loading state
+            showLoading(true);
+            hideError();
+            hideResult();
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ review_text: reviewText })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                showResult(result);
+            } catch (error) {
+                showError(`Analysis failed: ${error.message}`);
+                console.error('Error:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('analyzeBtn').disabled = show;
+        }
+
+        function showResult(result) {
+            const resultDiv = document.getElementById('result');
+            const sentimentLabel = document.getElementById('sentimentLabel');
+            const confidenceText = document.getElementById('confidenceText');
+
+            sentimentLabel.textContent = result.sentiment;
+            confidenceText.textContent = `Confidence: ${(result.confidence * 100).toFixed(1)}%`;
+
+            resultDiv.className = `result ${result.sentiment}`;
+            resultDiv.style.display = 'block';
+        }
+
+        function hideResult() {
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        // Allow Enter key to submit (Ctrl+Enter for new line)
+        document.getElementById('reviewText').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey) {
+                e.preventDefault();
+                analyzeReview();
+            }
+        });
+    </script>
+</body>
+</html>
