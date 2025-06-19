@@ -12,6 +12,8 @@ A production-ready machine learning application that classifies movie reviews as
 
 **[Try the live application →](https://imdb-sentiment-analysis-nbmd.onrender.com/)**
 
+**Please forgive initial load time. This is free tier hosting and will need to be started up from sleep.**
+
 Test it with your own movie reviews or use the built-in examples to see real-time sentiment analysis in action!
 
 ## 📊 Model Performance
