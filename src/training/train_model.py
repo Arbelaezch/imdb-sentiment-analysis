@@ -187,7 +187,6 @@ def main():
     print("=" * 50)
     
     # Load and preprocess data
-    # Put your IMDB-dataset.csv file in the data/raw/ folder
     data_path = "data/raw"  
     X_train, X_test, y_train, y_test = load_and_preprocess_data(data_path)
     
