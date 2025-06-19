@@ -87,7 +87,8 @@ data/processed/*
 !data/processed/.gitkeep
 
 # Logs
-logs/
+logs/*
+!logs/.gitkeep
 *.log
 
 # macOS
