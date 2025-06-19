@@ -32,4 +32,4 @@ ENV FLASK_ENV=production
 ENV PYTHONPATH=/app
 
 # Run gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "run_app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "120", "run_app:app"]
