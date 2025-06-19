@@ -1,0 +1,38 @@
+{
+  "model_type": "Logistic Regression",
+  "best_params": {
+    "C": 1.0,
+    "max_iter": 1000
+  },
+  "train_accuracy": 0.91975,
+  "test_accuracy": 0.8936,
+  "classification_report": {
+    "0": {
+      "precision": 0.9016326530612245,
+      "recall": 0.8836,
+      "f1-score": 0.8925252525252525,
+      "support": 5000.0
+    },
+    "1": {
+      "precision": 0.8858823529411765,
+      "recall": 0.9036,
+      "f1-score": 0.8946534653465347,
+      "support": 5000.0
+    },
+    "accuracy": 0.8936,
+    "macro avg": {
+      "precision": 0.8937575030012005,
+      "recall": 0.8936,
+      "f1-score": 0.8935893589358936,
+      "support": 10000.0
+    },
+    "weighted avg": {
+      "precision": 0.8937575030012005,
+      "recall": 0.8936,
+      "f1-score": 0.8935893589358936,
+      "support": 10000.0
+    }
+  },
+  "cross_val_score": 0.8861249999999998,
+  "selected_model": "logistic_regression"
+}
