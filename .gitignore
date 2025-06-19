@@ -76,7 +76,7 @@ ipython_config.py
 .env.production.local
 
 # Machine Learning specific
-models/*.pkl
+# models/*.pkl
 models/*.joblib
 models/*.h5
 models/*.pt
